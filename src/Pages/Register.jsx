@@ -81,7 +81,7 @@ const Register = () => {
             <div class="form-control mt-6">
               <input
                 type="submit"
-                value="Login"
+                value="Create Account"
                 className="btn btn-md bg-green-400"
               />
             </div>

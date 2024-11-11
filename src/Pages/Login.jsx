@@ -1,11 +1,31 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import auth from "../firebase.init";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [sMessage, setSMessage] = useState("");
+  const [eMessage, setEMessage] = useState("");
+  const emailResest=useRef()
+
+  const handleResetEmail=()=>{
+    const sentEmail=emailResest.current.value
+    
+    if(!sentEmail){
+      setEMessage('Please provide your valid email')
+      return
+    }
+    else{
+      sendPasswordResetEmail(auth,sentEmail)
+      .then(()=>{
+        console.log('Reset Email is sent')
+      })
+    }
+  }
+
   const handleLogin = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -14,9 +34,18 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, pass)
       .then((result) => {
         console.log(result.user);
+        if (!result.user.emailVerified) {
+          
+          setEMessage("Please Verify Your Email at first");
+          return;
+        } else {
+          setLoginSuccess(true);
+          setSMessage("Login Successfull");
+        }
       })
       .catch((error) => {
-        console.log("ERROR", error);
+        setEMessage(error);
+        return
       });
   };
   return (
@@ -35,6 +64,7 @@ const Login = () => {
                 type="email"
                 placeholder="email"
                 name="email"
+                ref={emailResest}
                 class="input input-bordered"
                 required
               />
@@ -50,7 +80,7 @@ const Login = () => {
                 class="input input-bordered"
                 required
               />
-              <label class="label">
+              <label class="label" onClick={handleResetEmail}>
                 <a href="#" class="label-text-alt link link-hover">
                   Forgot password?
                 </a>
@@ -63,15 +93,19 @@ const Login = () => {
                 className="btn btn-md bg-green-400"
               />
             </div>
-            <button
-              onClick={() => setIsVisible(!isVisible)}
-              className="absolute bottom-36 right-8 btn"
-            >
-              {isVisible ? <FaEyeSlash /> : <FaEye />}
-            </button>
 
           </form>
-
+          <button
+            onClick={() => setIsVisible(!isVisible)}
+            className="absolute bottom-48 right-8 btn"
+          >
+            {isVisible ? <FaEyeSlash /> : <FaEye />}
+          </button>
+          <div className="text-center">
+            {
+              loginSuccess? <p className="text-green-600">{sMessage}</p>: <p className="text-error">{eMessage}</p>
+            }
+          </div>
           <button className="my-4 mx-5 text-center">
             New User? Please <Link to="/register">Sign Up</Link>
           </button>

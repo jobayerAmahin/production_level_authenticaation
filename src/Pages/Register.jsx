@@ -1,14 +1,15 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { Link} from "react-router-dom";
 import auth from "../firebase.init";
 import { useState } from "react";
 
 const Register = () => {
   const [loginStat, setLoginStat] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg,setSuccessMsg]=useState('')
   const regex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).+$/;
-  
-  const navigate = useNavigate();
+
+ 
   const handleRegister = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -23,11 +24,17 @@ const Register = () => {
       setErrorMsg('Please Accept Terms and Conditions')
       return
     }
+    setErrorMsg('')
+    setSuccessMsg('')
 
     createUserWithEmailAndPassword(auth, email, pass)
       .then((result) => {
-        console.log(result.user);
+        
         setLoginStat(true);
+        sendEmailVerification(auth.currentUser)
+        .then(result=>{
+          setSuccessMsg('Email Verification link is sent')
+        })
       })
       .catch((error) => {
         setLoginStat(false);
@@ -104,7 +111,7 @@ const Register = () => {
             </div>
           </form>
           {<p className="text-error text-center">{errorMsg}</p>}
-          {loginStat && navigate("/dashboard")}
+          {loginStat && <p className="text-green-500 text-center">{successMsg}</p>}
 
           <p className="my-4 mx-5 text-center">
             Already have an account? <Link to="/login">Login</Link>

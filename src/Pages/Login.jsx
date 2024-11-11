@@ -4,24 +4,21 @@ import { Link } from "react-router-dom";
 import auth from "../firebase.init";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-
-
 const Login = () => {
-  const [isVisible,setIsVisible]=useState(false)
-    const handleLogin=e=>{
-        e.preventDefault()
-        const email=e.target.email.value
-        const pass=e.target.pass.value
-        
-        signInWithEmailAndPassword(auth,email,pass)
-        .then(result=>{
-          console.log(result.user)
-        })
-        .catch(error=>{
-          console.log("ERROR",error)
-        })
+  const [isVisible, setIsVisible] = useState(false);
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const pass = e.target.pass.value;
 
-    } 
+    signInWithEmailAndPassword(auth, email, pass)
+      .then((result) => {
+        console.log(result.user);
+      })
+      .catch((error) => {
+        console.log("ERROR", error);
+      });
+  };
   return (
     <div class="hero bg-base-200 min-h-screen">
       <div class="hero-content flex-col">
@@ -47,7 +44,7 @@ const Login = () => {
                 <span class="label-text">Password</span>
               </label>
               <input
-                type={isVisible?'text':'password'}
+                type={isVisible ? "text" : "password"}
                 placeholder="password"
                 name="pass"
                 class="input input-bordered"
@@ -60,17 +57,24 @@ const Login = () => {
               </label>
             </div>
             <div class="form-control mt-6">
-              <input type="submit" value="Login" className="btn btn-md bg-green-400" />
+              <input
+                type="submit"
+                value="Login"
+                className="btn btn-md bg-green-400"
+              />
             </div>
-            <button onClick={()=>setIsVisible(!isVisible)} className="absolute bottom-36 right-8 btn">
-              
-              {
-                isVisible? <FaEyeSlash />: <FaEye />
-              }
-              </button>
+            <button
+              onClick={() => setIsVisible(!isVisible)}
+              className="absolute bottom-36 right-8 btn"
+            >
+              {isVisible ? <FaEyeSlash /> : <FaEye />}
+            </button>
+
           </form>
 
-          <button className="my-4 mx-5 text-center">New User? Please <Link to='/register'>Sign Up</Link></button>
+          <button className="my-4 mx-5 text-center">
+            New User? Please <Link to="/register">Sign Up</Link>
+          </button>
         </div>
       </div>
     </div>

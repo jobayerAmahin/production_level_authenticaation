@@ -14,8 +14,13 @@ const Register = () => {
     const email = e.target.email.value;
     const pass = e.target.pass.value;
     const name = e.target.name.value;
+    const terms=e.target.terms.checked;
     if(!regex.test(pass)){
       setErrorMsg("Password doesn't match the requirements")
+      return
+    }
+    if(!terms){
+      setErrorMsg('Please Accept Terms and Conditions')
       return
     }
 
@@ -76,6 +81,18 @@ const Register = () => {
                 <a href="#" class="label-text-alt link link-hover">
                   Forgot password?
                 </a>
+              </label>
+            </div>
+            <div class="form-control">
+              <label class="cursor-pointer label flex justify-start space-x-4">
+                <input
+                  type="checkbox"
+                  name="terms"
+                  class="checkbox checkbox-success"
+                />
+                <span class="label-text">
+                  Please Accept Our Terms and Conditions
+                </span>
               </label>
             </div>
             <div class="form-control mt-6">

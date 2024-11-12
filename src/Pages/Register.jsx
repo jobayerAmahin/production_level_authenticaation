@@ -1,40 +1,50 @@
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { Link} from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
+import { Link } from "react-router-dom";
 import auth from "../firebase.init";
 import { useState } from "react";
 
 const Register = () => {
   const [loginStat, setLoginStat] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg,setSuccessMsg]=useState('')
-  const regex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).+$/;
+  const [successMsg, setSuccessMsg] = useState("");
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).+$/;
 
- 
   const handleRegister = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const pass = e.target.pass.value;
     const name = e.target.name.value;
-    const terms=e.target.terms.checked;
-    if(!regex.test(pass)){
-      setErrorMsg("Password doesn't match the requirements")
-      return
+    const terms = e.target.terms.checked;
+    const photo = e.target.photo.value;
+    if (!regex.test(pass)) {
+      setErrorMsg("Password doesn't match the requirements");
+      return;
     }
-    if(!terms){
-      setErrorMsg('Please Accept Terms and Conditions')
-      return
+    if (!terms) {
+      setErrorMsg("Please Accept Terms and Conditions");
+      return;
     }
-    setErrorMsg('')
-    setSuccessMsg('')
+    setErrorMsg("");
+    setSuccessMsg("");
 
     createUserWithEmailAndPassword(auth, email, pass)
       .then((result) => {
-        
+        console.log(result)
         setLoginStat(true);
-        sendEmailVerification(auth.currentUser)
-        .then(result=>{
-          setSuccessMsg('Email Verification link is sent')
-        })
+        updateProfile(auth.currentUser,{displayName:name,photoURL:photo})
+          .then(()=>{
+            console.log(photo)
+          })
+          .catch(error=>{
+            console.log("ERROR",error)
+          })
+        sendEmailVerification(auth.currentUser).then((result) => {
+          setSuccessMsg("Email Verification link is sent");
+        });
       })
       .catch((error) => {
         setLoginStat(false);
@@ -57,6 +67,18 @@ const Register = () => {
                 type="text"
                 placeholder="Name"
                 name="name"
+                class="input input-bordered"
+                required
+              />
+            </div>
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Photo URL</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Name"
+                name="photo"
                 class="input input-bordered"
                 required
               />
@@ -111,7 +133,9 @@ const Register = () => {
             </div>
           </form>
           {<p className="text-error text-center">{errorMsg}</p>}
-          {loginStat && <p className="text-green-500 text-center">{successMsg}</p>}
+          {loginStat && (
+            <p className="text-green-500 text-center">{successMsg}</p>
+          )}
 
           <p className="my-4 mx-5 text-center">
             Already have an account? <Link to="/login">Login</Link>
